@@ -6,6 +6,8 @@ This is the frontend for the read-only [meeting-room door display](https://lab.l
 
 Python 3.10+ is enough to build and preview. Node.js is only used for a JavaScript syntax check.
 
+**Design canvas:** the Acer A312-2W in Fully Kiosk Browser was measured at **962×602 CSS px**, DPR **1.33**, in landscape fullscreen. Also check the older **962×425 CSS px** ordinary-browser viewport. See the [Acer landscape design specification](docs/acer-landscape-design-spec.md) for the measured values, visual hierarchy, all-state checklist and on-device acceptance criteria.
+
 ```sh
 python3 scripts/dev_server.py
 ```
@@ -49,11 +51,11 @@ The public API returns a snapshot shaped like this; dates below are examples onl
 }
 ```
 
-Only a fresh snapshot with an enabled room may show “空闲” or “使用中”. If fetching fails, `fresh=false`, or `fetched_at` ages beyond `max_age_seconds`, show “状态未知 / 请查看飞书”. Booking rows currently display “已预约”; the public JSON contains times only, with no organizer names, meeting titles, internal IDs or calendar links. Design the page so the room, status and next booking are readable at a distance and fit without scrolling. The Acer's ordinary browser measured **962×425 CSS px**, DPR about 1.331, Android 14 WebView/Chrome 113. Fully's true fullscreen viewport still needs on-device measurement.
+Only a fresh snapshot with an enabled room may show “空闲” or “使用中”. If fetching fails, `fresh=false`, or `fetched_at` ages beyond `max_age_seconds`, show “状态未知 / 请查看飞书”. Booking rows currently display “已预约”; the public JSON contains times only, with no organizer names, meeting titles, internal IDs or calendar links. Design the page so the room, status and next booking are readable at a distance and fit without scrolling at both Acer viewports.
 
 ## Collaborate and release
 
-This repository is public. Teammates can fork it and open pull requests without an invitation; teammates with write access can create branches here directly. Include screenshots of the relevant states at 962×425 CSS px. Review empty, busy, soon, unknown and long-name layouts. See [CONTRIBUTING.md](CONTRIBUTING.md) for the handoff checklist.
+This repository is public. Teammates can fork it and open pull requests without an invitation; teammates with write access can create branches here directly. Include screenshots of the relevant states at 962×602 and 962×425 CSS px. Review empty, busy, soon, unknown and long-name layouts. See [CONTRIBUTING.md](CONTRIBUTING.md) for the handoff checklist.
 
 The `main` branch is the UI source for future releases. A merge **does not automatically change the live door sign**. After review, the deployment maintainer builds the selected commit, copies only `dist/index.html` into the Lab portal's `/meeting-room-display/` static route, runs Lab's site checks, backs up and replaces the CA1 page, and verifies the live JSON and tablet. The parent Mac trial service can be refreshed from the same commit using its `tools/build_live_page.py` wrapper, which copies `dist/local.html`. The JSON publisher is a separate lisahost/Mac service and is not in this repository. The current live page matches the initial production build byte-for-byte.
 
