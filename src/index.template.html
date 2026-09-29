@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#1A85EC">
+  <meta name="color-scheme" content="light">
+  <title>会议室门牌 · CreativeFitting</title>
+  <!-- Bundled Nunito and Quicksand licenses:
+{{FONT_LICENSES}}
+  -->
+  <style>
+{{FONT_CSS}}
+{{PAGE_CSS}}
+  </style>
+</head>
+<body class="state-unknown" data-room="1" data-api-base="/api" data-layout-report="on">
+  <div class="signage">
+    <header class="topbar">
+      <img class="brand-wordmark" src="{{WORDMARK_DATA}}" alt="CreativeFitting">
+      <div class="datetime"><span id="today">今天</span><time id="clock">--:--</time></div>
+    </header>
+
+    <main class="content">
+      <section class="room-side" aria-labelledby="room-name">
+        <div class="room-meta"><span>会议室</span><span id="capacity">-- 人</span></div>
+        <h1 id="room-name">会议室</h1>
+        <div class="status-block" role="status" aria-live="polite">
+          <div class="status-kicker"><i class="status-dot" aria-hidden="true"></i><span id="status-kicker">预约状态</span></div>
+          <div id="status-main" class="status-main">状态未知</div>
+          <div id="status-support" class="status-support">请查看飞书</div>
+        </div>
+      </section>
+
+      <section class="booking-side" aria-labelledby="booking-heading">
+        <div class="booking-head"><h2 id="booking-heading">预约时间</h2><span id="booking-horizon">未来两天</span></div>
+        <div id="booking-list" class="booking-list">
+          <div class="booking-empty"><strong>正在读取预约</strong></div>
+        </div>
+      </section>
+    </main>
+
+    <footer><span>预约请在飞书完成</span><span id="sync-text">正在同步</span></footer>
+  </div>
+  <script>
+{{SCRIPT}}
+  </script>
+</body>
+</html>
