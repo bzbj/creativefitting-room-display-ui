@@ -62,6 +62,7 @@ def configure(html: str, api_base: str) -> str:
 def build() -> Path:
     base = source_html()
     DIST.mkdir(exist_ok=True)
+    (DIST / "local.html").write_text(base)
     production = DIST / "index.html"
     production.write_text(configure(base, "/meeting-room-display/api"))
     menu = [

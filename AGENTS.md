@@ -1,6 +1,6 @@
 # Project instructions
 
-This repository owns only the CreativeFitting meeting-room door display UI. Keep the page usable as a self-contained HTML build with no runtime CDN or framework dependency. `dist/index.html` is the deployment artifact; the `dist/preview/` pages and `/mock/*` responses are local design fixtures only.
+This repository owns only the CreativeFitting meeting-room door display UI. Keep the page usable as a self-contained HTML build with no runtime CDN or framework dependency. `dist/index.html` is the CA1 deployment artifact, `dist/local.html` feeds the Mac Acer trial service, and the `dist/preview/` pages and `/mock/*` responses are local design fixtures only.
 
 The current public data contract contains room name, capacity, enabled/fresh flags, fetch time and busy start/end intervals. Never add Feishu credentials, real booking records, meeting titles, internal IDs or personal names to this repository or its fixtures. Bookings currently read “已预约”. A failed, disabled or stale response must show “状态未知”, never green availability.
 

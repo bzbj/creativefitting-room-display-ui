@@ -20,7 +20,7 @@ python3 -m unittest discover -s tests -v
 node --check src/app.js
 ```
 
-The artifact is `dist/index.html`. It points to the read-only same-origin `/meeting-room-display/api/room/1` route, contains the Dotted-i wordmark and fonts, and does not upload device geometry. The local preview pages in `dist/preview/` are for design review only and must not be deployed.
+The production artifact is `dist/index.html`. It points to the read-only same-origin `/meeting-room-display/api/room/1` route, contains the Dotted-i wordmark and fonts, and does not upload device geometry. `dist/local.html` is a separate artifact for the existing Mac trial service at `/room/1`; it uses `/api` and reports device geometry for Acer checks. The preview pages in `dist/preview/` are for design review only and must not be deployed.
 
 ## Where to edit
 
@@ -55,6 +55,6 @@ Only a fresh snapshot with an enabled room may show “空闲” or “使用中
 
 Create a branch for each design change, open a pull request, and include screenshots of the relevant states at 962×425 CSS px. Review empty, busy, soon, unknown and long-name layouts. See [CONTRIBUTING.md](CONTRIBUTING.md) for the handoff checklist.
 
-The `main` branch is the UI source for future releases. A merge **does not automatically change the live door sign**. After review, the deployment maintainer builds the selected commit, copies only `dist/index.html` into the Lab portal's `/meeting-room-display/` static route, runs Lab's site checks, backs up and replaces the CA1 page, and verifies the live JSON and tablet. The JSON publisher is a separate lisahost/Mac service and is not in this repository. The current live page matches the initial production build byte-for-byte.
+The `main` branch is the UI source for future releases. A merge **does not automatically change the live door sign**. After review, the deployment maintainer builds the selected commit, copies only `dist/index.html` into the Lab portal's `/meeting-room-display/` static route, runs Lab's site checks, backs up and replaces the CA1 page, and verifies the live JSON and tablet. The parent Mac trial service can be refreshed from the same commit using its `tools/build_live_page.py` wrapper, which copies `dist/local.html`. The JSON publisher is a separate lisahost/Mac service and is not in this repository. The current live page matches the initial production build byte-for-byte.
 
 The CreativeFitting wordmark is company branding. Nunito and Quicksand retain their bundled SIL Open Font License texts in `assets/`. This repository is for CreativeFitting project collaboration; no general open-source license is granted for the UI or brand artwork.

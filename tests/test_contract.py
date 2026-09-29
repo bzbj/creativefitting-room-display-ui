@@ -25,6 +25,11 @@ class BuildContractTests(unittest.TestCase):
         self.assertIn("data:image/svg+xml;base64,", self.production)
         self.assertIn("data:font/woff2;base64,", self.production)
 
+    def test_local_artifact_keeps_geometry_reporting_for_acer_checks(self):
+        local = (ROOT / "dist" / "local.html").read_text()
+        self.assertIn('data-api-base="/api"', local)
+        self.assertIn('data-layout-report="on"', local)
+
     def test_every_preview_uses_a_mock_api(self):
         for scenario in SCENARIOS:
             with self.subTest(scenario=scenario):
