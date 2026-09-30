@@ -1,12 +1,12 @@
 # CreativeFitting meeting-room display UI
 
-This is the frontend for the read-only [meeting-room door display](https://lab.linjunkai.com/meeting-room-display/). It is a plain, self-contained HTML page designed for a landscape Acer Android tablet running Fully Kiosk Browser. The repository has **no Feishu login or backend credentials**; local development uses generated fictional room schedules.
+This is the frontend for the read-only [meeting-room door display](https://lab.linjunkai.com/meeting-room-display/). The Acer Android tablet must now be mounted in portrait and runs Fully Kiosk Browser. The repository has **no Feishu login or backend credentials**; local development uses generated fictional room schedules.
 
 ## Start designing
 
 Python 3.10+ is enough to build and preview. Node.js is only used for a JavaScript syntax check.
 
-**Design canvas:** design and validate for the Acer A312-2W in Fully Kiosk Browser at **962×602 CSS px**, DPR **1.33**, in landscape fullscreen. See the [Acer landscape design specification](docs/acer-landscape-design-spec.md) for the measured values, visual hierarchy, all-state checklist and on-device acceptance criteria.
+**Design canvas:** use **602×962 CSS px provisionally** for first-pass portrait mockups. This estimate rotates the previously measured Fully landscape viewport (962×602 CSS px, DPR 1.33); the tablet's portrait Fully viewport still needs an on-device measurement. Do not call the estimate a verified acceptance size. See the [Acer display design specification](docs/acer-display-design-spec.md) for the portrait hierarchy, measurement notes, all-state checklist and on-device acceptance criteria.
 
 ```sh
 python3 scripts/dev_server.py
@@ -29,7 +29,7 @@ The production artifact is `dist/index.html`. It points to the read-only same-or
 | File | Purpose |
 | --- | --- |
 | `src/index.template.html` | Door-sign structure and labels |
-| `src/styles.css` | Layout, type sizes, colors and small-landscape rules |
+| `src/styles.css` | Layout, type sizes, colors and orientation-specific responsive rules |
 | `src/app.js` | Clock, busy-state rendering, refresh and stale-data behavior |
 | `assets/` | Dotted-i wordmark, Nunito/Quicksand WOFF2 fonts and OFL licenses |
 | `scripts/build.py` | Produces production and preview single-file HTML |
@@ -55,7 +55,7 @@ Only a fresh snapshot with an enabled room may show “空闲” or “使用中
 
 ## Collaborate and release
 
-This repository is public. Teammates can fork it and open pull requests without an invitation; teammates with write access can create branches here directly. Include screenshots of the relevant states at 962×602 CSS px. Review empty, busy, soon, unknown and long-name layouts. See [CONTRIBUTING.md](CONTRIBUTING.md) for the handoff checklist.
+This repository is public. Teammates can fork it and open pull requests without an invitation; teammates with write access can create branches here directly. Include portrait screenshots of the relevant states at the provisional 602×962 CSS-pixel canvas, labelled as an estimate until measured on the tablet. Review empty, busy, soon, unknown and long-name layouts. See [CONTRIBUTING.md](CONTRIBUTING.md) for the handoff checklist.
 
 The `main` branch is the UI source for future releases. A merge **does not automatically change the live door sign**. After review, the deployment maintainer builds the selected commit, copies only `dist/index.html` into the Lab portal's `/meeting-room-display/` static route, runs Lab's site checks, backs up and replaces the CA1 page, and verifies the live JSON and tablet. The parent Mac trial service can be refreshed from the same commit using its `tools/build_live_page.py` wrapper, which copies `dist/local.html`. The JSON publisher is a separate lisahost/Mac service and is not in this repository. Operational deployment receipts record the released commit and artifact hash.
 
