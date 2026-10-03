@@ -19,9 +19,9 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Location", "/preview/")
             self.end_headers()
             return
-        match = re.fullmatch(r"/mock/([a-z]+)/room/1", path)
-        if match and match.group(1) in SCENARIOS:
-            self.send_bytes(json.dumps(make_snapshot(match.group(1)), ensure_ascii=False).encode(),
+        match = re.fullmatch(r"/mock/([a-z]+)/room/([1-9][0-9]*)", path)
+        if match and match.group(1) in SCENARIOS and int(match.group(2)) <= 9007199254740991:
+            self.send_bytes(json.dumps(make_snapshot(match.group(1), room_number=int(match.group(2))), ensure_ascii=False).encode(),
                             "application/json; charset=utf-8")
             return
         if path == "/preview/":

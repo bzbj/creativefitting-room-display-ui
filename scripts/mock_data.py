@@ -7,9 +7,11 @@ from zoneinfo import ZoneInfo
 SCENARIOS = {"available", "next", "busy", "soon", "unknown", "long"}
 
 
-def make_snapshot(scenario: str, now: datetime | None = None) -> dict:
+def make_snapshot(scenario: str, now: datetime | None = None, room_number: int = 1) -> dict:
     if scenario not in SCENARIOS:
         raise ValueError(f"Unknown preview scenario: {scenario}")
+    if type(room_number) is not int or room_number < 1:
+        raise ValueError("room_number must be a positive integer")
     now = now or datetime.now(ZoneInfo("Asia/Shanghai"))
     if now.tzinfo is None or now.utcoffset() is None:
         raise ValueError("now must include a timezone")
@@ -34,7 +36,8 @@ def make_snapshot(scenario: str, now: datetime | None = None) -> dict:
         "fresh": fresh,
         "max_age_seconds": 630,
         "room": {
-            "name": "示例会议室 · 超长名称排版检查" if scenario == "long" else "示例会议室",
+            "name": ("示例会议室 · 超长名称排版检查" if scenario == "long" else "示例会议室")
+                    + (f" {room_number}" if room_number != 1 else ""),
             "capacity": 6,
             "enabled": True,
         },
