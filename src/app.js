@@ -2,7 +2,17 @@
 
 // Room metadata and occupied intervals come from the same-origin read-only server.
 const $ = id => document.getElementById(id);
-const roomNumber = location.pathname.match(/\/room\/([1-9][0-9]*)$/)?.[1] || document.body.dataset.room;
+function resolveRoomNumber(url, fallback = '1') {
+  const address = new URL(url);
+  const requested = address.searchParams.getAll('room');
+  if (requested.length > 1) return null;
+  // An explicit query takes precedence; an invalid value never uses the default.
+  const value = requested.length ? requested[0] :
+    address.pathname.match(/\/room\/([^/]+)\/?$/)?.[1] ?? fallback;
+  return typeof value === 'string' && /^[1-9][0-9]*$/.test(value) &&
+    Number.isSafeInteger(Number(value)) ? value : null;
+}
+const roomNumber = resolveRoomNumber(location.href, document.body.dataset.room);
 const apiBase = document.body.dataset.apiBase || '/api';
 const zone = 'Asia/Shanghai';
 const clockFormat = new Intl.DateTimeFormat('zh-CN', {
@@ -19,6 +29,7 @@ const keyFormat = new Intl.DateTimeFormat('en-CA', {
 });
 let snapshot = null;
 let fetchError = false;
+let fetchErrorReason = roomNumber ? '' : '请检查会议室链接';
 let lastLayoutSignature = '';
 
 function time(iso) { return clockFormat.format(new Date(iso)); }
@@ -113,7 +124,7 @@ function render() {
   const next = fresh && events.find(event => event.start > now.getTime());
 
   if (!fresh) {
-    setState('unknown', '预约状态', '状态未知', room?.enabled === false ? '暂停使用' : '请查看飞书');
+    setState('unknown', '预约状态', '状态未知', fetchErrorReason || (room?.enabled === false ? '暂停使用' : '请查看飞书'));
   } else if (current) {
     setState('busy', '当前状态', '使用中', `至 ${time(current.endIso)}`);
   } else if (next && next.start - now.getTime() <= 10 * 60000) {
@@ -128,8 +139,13 @@ function render() {
 }
 async function refresh() {
   if (!roomNumber) { fetchError = true; render(); return; }
+  fetchErrorReason = '';
   try {
     const response = await fetch(`${apiBase}/room/${roomNumber}?v=${Date.now()}`, {cache:'no-store'});
+    if (response.status === 404) {
+      snapshot = null;
+      fetchErrorReason = '请检查会议室链接';
+    }
     if (!response.ok) throw new Error('HTTP ' + response.status);
     snapshot = await response.json();
     fetchError = false;

@@ -59,6 +59,12 @@ class MockContractTests(unittest.TestCase):
         self.assertFalse(payload["fresh"])
         self.assertEqual(payload["events"], [])
 
+    def test_preview_rooms_have_distinct_synthetic_names(self):
+        one = make_snapshot("available", self.NOW, room_number=1)
+        two = make_snapshot("available", self.NOW, room_number=2)
+        self.assertNotEqual(one["room"]["name"], two["room"]["name"])
+        self.assertEqual(two["source"], "demo")
+
 
 if __name__ == "__main__":
     unittest.main()
