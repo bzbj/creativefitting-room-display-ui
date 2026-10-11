@@ -37,6 +37,11 @@ class BuildContractTests(unittest.TestCase):
                 self.assertIn(f'data-api-base="/mock/{scenario}"', html)
                 self.assertNotIn('data-api-base="/meeting-room-display/api"', html)
 
+    def test_hub_artifact_uses_hk_same_origin_api_without_geometry_upload(self):
+        hub = (ROOT / "dist" / "hub.html").read_text()
+        self.assertIn('data-api-base="/rooms/api"', hub)
+        self.assertIn('data-layout-report="off"', hub)
+
 
 class MockContractTests(unittest.TestCase):
     NOW = datetime(2026, 9, 29, 9, 0, tzinfo=timezone(timedelta(hours=8)))

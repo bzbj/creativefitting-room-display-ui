@@ -65,6 +65,7 @@ def build() -> Path:
     (DIST / "local.html").write_text(base)
     production = DIST / "index.html"
     production.write_text(configure(base, "/meeting-room-display/api"))
+    (DIST / "hub.html").write_text(configure(base, "/rooms/api"))
     menu = [
         '<!doctype html><html lang="zh-CN"><meta charset="utf-8">',
         '<meta name="viewport" content="width=device-width,initial-scale=1">',

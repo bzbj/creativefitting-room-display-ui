@@ -4,9 +4,9 @@
 
 | 屏幕绑定 | Fully 的 Start URL |
 | --- | --- |
-| 1 号会议室 | `https://lab.linjunkai.com/meeting-room-display/?room=1` |
-| 2 号会议室 | `https://lab.linjunkai.com/meeting-room-display/?room=2` |
-| 7 号会议室 | `https://lab.linjunkai.com/meeting-room-display/?room=7` |
+| 1 号会议室 | `https://hub-test.linjunkai.com/rooms/?room=1` |
+| 2 号会议室 | `https://hub-test.linjunkai.com/rooms/?room=2` |
+| 7 号会议室 | `https://hub-test.linjunkai.com/rooms/?room=7` |
 
 编号是显示系统的稳定编号，不是飞书内部 ID。安装时在 Fully 的 **Web Content Settings → Start URL** 中填入对应链接，再打开 Start URL。每块屏只显示一个房间，没有轮播或自动切换。未带 `room` 的原链接仍默认显示 1 号房间，兼容已有 Acer 设置。
 
@@ -53,3 +53,7 @@ node --test tests/test_room_selection.cjs
 | 2 号虚构会议室 | 错误链接 |
 | --- | --- |
 | ![虚构的 2 号会议室](multi-room-previews/room-2.png) | ![错误链接保持未知](multi-room-previews/invalid-link.png) |
+
+## HK1 deployment update — 2026-10-11
+
+The active Hub copy lives on HK1 at `/rooms/`, with same-origin `/rooms/api/room/N`. It requires the current Feishu account/room permission gate, including unattended tablets. New releases use `dist/hub.html`; legacy CA1 service retirement and final company-domain cutover are separate operations. Fixed `?room=N` links continue to select each screen independently.
