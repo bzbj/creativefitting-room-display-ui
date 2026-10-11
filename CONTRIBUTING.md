@@ -7,3 +7,5 @@
 5. If you change the DOM used by the original Acer geometry checker, note it in the pull request so the deployment maintainer can update that checker. Fully's landscape viewport was measured, but its portrait viewport still needs a report; add an actual-device screenshot when changing visible layout. The original Mac-only geometry checker cannot read the tablet while it is on another network.
 
 The merged UI is released separately on HK1 by the lisahost deployment maintainer after build, browser and API checks. Retain Feishu authentication and verify portrait Fully on the physical device when available. Re-measure the tablet's viewport after rotating it before recording portrait acceptance dimensions.
+
+Studio contributions use `src/studio/` and the [submission guide](docs/room-content-studio.md). Run `node --check src/studio/app.js` and `node --check src/studio/shell.js` alongside existing checks. Include fictional preview screenshots; retain sandbox isolation and the existing live display artifact. This phase has submissions and previews only.

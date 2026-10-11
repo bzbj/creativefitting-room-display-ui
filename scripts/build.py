@@ -17,7 +17,7 @@ def data_uri(path: Path, mime_type: str) -> str:
     return f"data:{mime_type};base64,{encoded}"
 
 
-def source_html() -> str:
+def source_html(script: str | None = None) -> str:
     font_css = "\n".join(
         f"@font-face{{font-family:'{family}';font-style:normal;"
         f"font-weight:{weight};font-display:swap;"
@@ -37,7 +37,7 @@ def source_html() -> str:
         ),
         "{{FONT_CSS}}": font_css,
         "{{PAGE_CSS}}": (SRC / "styles.css").read_text(),
-        "{{SCRIPT}}": (SRC / "app.js").read_text(),
+        "{{SCRIPT}}": script if script is not None else (SRC / "app.js").read_text(),
         "{{FONT_LICENSES}}": licenses,
     }
     html = (SRC / "index.template.html").read_text()
@@ -57,6 +57,39 @@ def configure(html: str, api_base: str) -> str:
             raise RuntimeError(f"Expected exactly one {old} in built HTML")
         html = html.replace(old, new, 1)
     return html
+
+
+def build_studio() -> None:
+    import re
+    import shutil
+
+    source = SRC / "studio"
+    output = DIST / "studio"
+    output.mkdir(parents=True, exist_ok=True)
+    replacements = {
+        "{{STUDIO_CSS}}": (source / "styles.css").read_text(),
+        "{{STUDIO_SCRIPT}}": (source / "app.js").read_text(),
+        "{{WORDMARK_DATA}}": data_uri(ASSETS / "wordmark-dotted-i-solid-blue.svg", "image/svg+xml"),
+    }
+    for template, filename in [("index.template.html", "index.html"), ("guide.template.html", "guide.html")]:
+        html = (source / template).read_text()
+        for marker, value in replacements.items():
+            html = html.replace(marker, value)
+        (output / filename).write_text(html)
+    shell = configure(source_html((source / "shell.js").read_text()), "/rooms/studio/preview-only")
+    shell = re.sub(r'<section class="question-card".*?</section>',
+        '<section class="question-card" aria-label="作品区域"><div id="content-stage"></div></section>', shell, count=1, flags=re.S)
+    shell = shell.replace('</style>', """
+#content-stage {width:100%;height:100%;overflow:hidden;}
+#content-stage iframe,#content-stage img,#content-stage video {display:block;width:100%;height:100%;border:0;}
+#content-stage video {background:#111820;}
+.studio-placeholder {height:100%;padding:32px;display:flex;flex-direction:column;justify-content:center;gap:25px;}
+.studio-placeholder small {font-size:13px;letter-spacing:2px;color:#857843;}
+.studio-placeholder strong {font-size:37px;line-height:1.4;}
+.studio-placeholder span {font-size:19px;line-height:1.8;color:#8b7d4f;}
+</style>""", 1)
+    (output / "shell.html").write_text(shell)
+    shutil.copyfile(source / "starter.html", output / "starter.html")
 
 
 def build() -> Path:
@@ -85,6 +118,7 @@ def build() -> Path:
         menu.append(f'<a href="/preview/{scenario}/">{labels[scenario]}</a>')
     menu.append('</html>')
     (DIST / "preview" / "index.html").write_text("\n".join(menu))
+    build_studio()
     return production
 
 
