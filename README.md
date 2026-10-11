@@ -65,3 +65,10 @@ The `main` branch is the UI source for future releases. A merge does not automat
 The selected production layout is [09 换一个好问题](docs/question-card-design.md): a stable booking area above a pale yellow question card. The entire upper booking area turns green, red, amber or slate with large white status text. 100 original bundled answer-book prompts draw randomly on load and every 30 seconds; tapping the arrow draws immediately and resets the reading time. No index or total is shown, and each cycle avoids repeats. No network or AI calls are involved. The full portrait canvas fits the available viewport without scrolling. State boundaries and data expiry are checked every second even if a fetch stalls; a ten-second request timeout and15-second polling allow later recovery.
 
 The CreativeFitting wordmark is company branding. Nunito and Quicksand retain their bundled SIL Open Font License texts in `assets/`. Public visibility allows viewing and proposing changes; no general open-source license is granted for the UI or brand artwork.
+
+
+## Room content Studio (submissions and previews only)
+
+The authenticated [Studio](https://hub-test.linjunkai.com/rooms/studio/) accepts one HTML/image/video file and stores a shareable company preview. It does not publish to the live meeting screen. Its [online guide](https://hub-test.linjunkai.com/rooms/studio/guide/) and [developer handoff](docs/room-content-studio.md) describe the provisional602×382 lower area, touch rules and template. `src/studio/` owns the Studio UI, portrait shell and starter; `dist/studio/` is deployed separately on HK1. The live display artifact stays unchanged.
+
+After starting the local dev server, open <http://127.0.0.1:8767/rooms/studio/>. Select a local file to preview within the Pad shell and switch meeting states. Local preview does not persist submissions; online saves use the private HK1 service and scoped company Feishu identity. Run `node --check src/studio/app.js` and `node --check src/studio/shell.js` in addition to the normal build/tests. Backend/auth/service files belong to the lisahost owner, outside this public repository.

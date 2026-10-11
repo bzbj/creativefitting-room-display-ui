@@ -43,6 +43,29 @@ class BuildContractTests(unittest.TestCase):
         self.assertIn('data-layout-report="off"', hub)
 
 
+class StudioContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        build()
+
+    def test_preview_is_synthetic_and_isolates_uploaded_html(self):
+        shell = (ROOT / 'dist/studio/shell.html').read_text()
+        self.assertIn("frame.setAttribute('sandbox','allow-scripts')", shell)
+        self.assertNotIn('allow-same-origin', shell)
+        self.assertIn("connect-src 'none'", shell)
+        self.assertNotIn('fetch(', shell)
+        self.assertIn('模拟预约 · 仅用于预览', shell)
+
+    def test_all_artifacts_and_documentation_exist(self):
+        for name in ('index', 'shell', 'guide', 'starter'):
+            html = (ROOT / f'dist/studio/{name}.html').read_text()
+            self.assertNotIn('{{', html)
+        index = (ROOT / 'dist/studio/index.html').read_text()
+        self.assertIn('/auth/studio/me', index)
+        self.assertIn('X-CSRF-Token', index)
+        self.assertTrue((ROOT / 'docs/room-content-studio.md').is_file())
+
+
 class MockContractTests(unittest.TestCase):
     NOW = datetime(2026, 9, 29, 9, 0, tzinfo=timezone(timedelta(hours=8)))
 

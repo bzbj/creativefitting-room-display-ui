@@ -19,6 +19,14 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Location", "/preview/")
             self.end_headers()
             return
+        if path == "/auth/studio/me":
+            self.send_bytes(json.dumps({"source":"demo", "name":"本地演示", "roles":[], "csrf_token":"local-preview"}).encode(), "application/json")
+            return
+        studio_files = {"/rooms/studio/":"index.html", "/rooms/studio/shell.html":"shell.html",
+                        "/rooms/studio/guide/":"guide.html", "/rooms/studio/starter.html":"starter.html"}
+        if path in studio_files:
+            self.send_bytes((DIST / "studio" / studio_files[path]).read_bytes(), "text/html; charset=utf-8")
+            return
         match = re.fullmatch(r"/mock/([a-z]+)/room/([1-9][0-9]*)", path)
         if match and match.group(1) in SCENARIOS and int(match.group(2)) <= 9007199254740991:
             self.send_bytes(json.dumps(make_snapshot(match.group(1), room_number=int(match.group(2))), ensure_ascii=False).encode(),

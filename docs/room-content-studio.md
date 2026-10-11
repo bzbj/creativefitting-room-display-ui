@@ -1,0 +1,40 @@
+# 会议屏创作室：投稿与预览
+
+入口：<https://hub-test.linjunkai.com/rooms/studio/>；在线指南：<https://hub-test.linjunkai.com/rooms/studio/guide/>。
+
+本阶段只保存投稿和生成公司内预览链接，不会替换正在使用的会议屏。员工通过公司飞书登录进入创作室；投稿权限只适用于创作室。预览上半部使用模拟预约，不读取真实会议安排。本人可以查看和撤回自己的作品，管理员可以查看全部投稿。拥有链接的公司登录用户可以预览；撤回后原链接失效。
+
+## 画布与触摸
+
+完整竖屏暂用 **602×962 CSS px**，上方会议状态区域580px，下方作品区域 **602×382 CSS px**。这些来自横屏测量旋转后的暂定设计坐标，**不是已经测量的竖屏 Fully 视口**。实际 Acer 竖屏验收和重新测量仍需现场进行，见 [Acer 规范](acer-display-design-spec.md)。
+
+作品只负责下方区域。使用 `width:100%; height:100%; overflow:hidden`，无需另画会议状态区。文字建议28–36px；触摸目标至少44px，推荐54–64px。一个主要互动即可：点按换一句话、显示一个答案、切换一幅小画。不要依赖悬停、键盘、复杂拖拽、长表单或滚动。无触摸时仍应完整展示，运动尽量慢，兼容 `prefers-reduced-motion`。
+
+## 文件要求
+
+| 类型 | 要求 |
+| --- | --- |
+| HTML | 一个UTF-8 `.html` / `.htm`，≤1MiB；CSS和JS内联，图片/字体用data URI。没有外网/API/CDN、账户、存储或真实会议数据。 |
+| 图片 | PNG/JPEG/WebP，≤10MiB，最长边≤4096px且≤1000万像素。推荐1204×764px；可选完整显示留白或铺满裁切。 |
+| 视频 | MP4/H.264或WebM/VP8/VP9，≤50MiB、≤60秒、≤1920×1080、≤30fps。推荐10–30秒；静音循环，轻触暂停/继续。 |
+
+建议视频保持602:382比例，例如1204×764。其他比例按选择的留白/裁切方式预览。HTML不能靠外部网址完成展示，资源必须放入单文件。
+
+## 投稿流程
+
+1. 飞书登录创作室，阅读在线指南或下载HTML模板。
+2. 选择本地文件即可试播；输入作品名、署名和简短说明。可以切换空闲/占用/即将开始/未知，展开完整Pad外壳，并点按作品。
+3. 点击提交保存后获得独立预览链接。可复制分享给公司同事，或打开专用预览页。
+4. 在“我的投稿”撤回；管理员有“公司投稿”。当前没有审批、排期或上屏操作。
+
+每人24小时最多30次投稿，服务总存储上限1GiB。预览是浏览器模拟，最终性能和触摸体验仍需Acer实机检验。
+
+## 前端开发
+
+源码在 `src/studio/`；执行 `python3 scripts/build.py` 产生 `dist/studio/{index,shell,guide,starter}.html`。启动 `python3 scripts/dev_server.py --port 8880`，访问 `http://127.0.0.1:8880/rooms/studio/`。本地只试播文件，保存投稿需要线上身份和私有服务。改动Studio时现有 `dist/hub.html` 应保持不变。
+
+`shell.html`从现有会议牌的模板和样式生成，只使用模拟状态。用户HTML放入 `sandbox="allow-scripts"` 的隔离iframe，**不能加入allow-same-origin**；CSP禁止网络、内嵌外部页面和表单提交。用户HTML下载接口返回text/plain而非同源可执行页面。参见 [MDN iframe 文档](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe)。
+
+私有上传接口、SQLite、员工身份校验、配额及HK1服务部署归lisahost运维workspace，不在这个公开仓库里。不要把用户上传文件、真实员工信息、预约数据、令牌或线上鉴权截图提交到Git。
+
+验证：Python构建/契约检查、原会议牌JS测试、Studio两份JS语法检查；浏览器检查模板点按、四种模拟状态、图片留白/裁切、视频静音循环/暂停以及保存后的链接。CI不会部署服务。
