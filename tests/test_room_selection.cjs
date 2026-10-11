@@ -43,7 +43,7 @@ async function open(url, status = 200, payload = null) {
   });
   vm.runInContext(source, context);
   await new Promise(resolve => setImmediate(resolve));
-  return {get, requests, body, advance(ms) {
+  return {get, requests, body, promptCount:vm.runInContext('questions.length', context), advance(ms) {
     now += ms;
     intervals.find(timer => timer.delay === 1000).callback();
   }};
@@ -103,7 +103,7 @@ test('booking boundaries update while no new response has arrived', async () => 
   assert.equal(page.body.className, 'state-soon');
   page.advance(4000);
   assert.equal(page.body.className, 'state-busy');
-  assert.equal(page.get('status-main').textContent, '已预约');
+  assert.equal(page.get('status-main').textContent, '占用中');
   page.advance(4000);
   assert.equal(page.body.className, 'state-available');
   assert.equal(page.requests.length, 1);
@@ -127,10 +127,45 @@ test('expired authorization shows unknown with a sign-in prompt', async () => {
 
 test('question interaction survives clock and booking refreshes', async () => {
   const page = await open('https://example.test/rooms/');
+  const first = page.get('question-text').textContent;
   page.get('question-next').listeners.click();
   const question = page.get('question-text').textContent;
-  assert.equal(page.get('question-index').textContent, '02 / 04');
+  assert.notEqual(question, first);
   page.advance(1000);
   assert.equal(page.get('question-text').textContent, question);
-  assert.equal(page.get('question-index').textContent, '02 / 04');
+});
+
+test('100 original prompts are shuffled without repeats within a cycle', async () => {
+  const page = await open('https://example.test/rooms/');
+  assert.equal(page.promptCount, 100);
+  let previous;
+  for (let cycle = 0; cycle < 3; cycle++) {
+    const drawn = new Set();
+    for (let i = 0; i < 100; i++) {
+      const text = page.get('question-text').textContent;
+      assert.ok(text.trim());
+      assert.notEqual(text, previous, 'No immediate repeat at the cycle boundary');
+      drawn.add(text);
+      previous = text;
+      page.get('question-next').listeners.click();
+    }
+    assert.equal(drawn.size, 100);
+  }
+});
+
+test('automatic rotation waits30 seconds and a tap resets the dwell time', async () => {
+  const page = await open('https://example.test/rooms/');
+  const first = page.get('question-text').textContent;
+  page.advance(29000);
+  assert.equal(page.get('question-text').textContent, first);
+  page.advance(1000);
+  const second = page.get('question-text').textContent;
+  assert.notEqual(second, first);
+  page.advance(29000);
+  page.get('question-next').listeners.click();
+  const tapped = page.get('question-text').textContent;
+  page.advance(1000);
+  assert.equal(page.get('question-text').textContent, tapped);
+  page.advance(29000);
+  assert.notEqual(page.get('question-text').textContent, tapped);
 });
