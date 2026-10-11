@@ -13,7 +13,7 @@ function send(reset = false) {
 function resizePad() {
   const panel = $('preview-panel'), expanded = panel.classList.contains('expanded');
   const standalone = document.body.classList.contains('standalone');
-  const scale = Math.min((panel.clientWidth - 54) / 602, expanded ? (innerHeight - 190) / 962 : standalone ? .68 : Math.min(.48,(innerHeight - 320) / 962), 1);
+  const scale = Math.min((panel.clientWidth - 54) / 602, expanded ? (innerHeight - 190) / 962 : Math.min(standalone ? .68 : .48,(innerHeight - (standalone ? 280 : 320)) / 962), 1);
   $('pad').style.setProperty('--pad-scale', Math.max(.2,scale));
 }
 function message(text, error = false) {
