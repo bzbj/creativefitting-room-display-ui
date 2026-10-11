@@ -54,7 +54,7 @@ The public API returns a snapshot shaped like this; dates below are examples onl
 }
 ```
 
-Only a fresh snapshot with an enabled room may show “空闲” or “已预约”. If fetching fails, `fresh=false`, or `fetched_at` ages beyond `max_age_seconds`, show “状态未知 / 请查看飞书”. Booking rows currently display “已预约”; the public JSON contains times only, with no organizer names, meeting titles, internal IDs or calendar links. Design the page so the room, status and next booking are readable at a distance and fit without scrolling at the measured Fully viewport.
+Only a fresh snapshot with an enabled room may show “空闲” or “占用中”. If fetching fails, `fresh=false`, or `fetched_at` ages beyond `max_age_seconds`, show “状态未知 / 请查看飞书”. Booking rows currently display “已预约”; the public JSON contains times only, with no organizer names, meeting titles, internal IDs or calendar links. Design the page so the room, status and next booking are readable at a distance and fit without scrolling at the measured Fully viewport.
 
 ## Collaborate and release
 
@@ -62,6 +62,6 @@ This repository is public. Teammates can fork it and open pull requests without 
 
 The `main` branch is the UI source for future releases. A merge does not automatically change the live door sign. The current deployment target is HK1 at `https://hub-test.linjunkai.com/rooms/` during migration; its Feishu authentication and room permissions remain in the shared server gateway. The deployment owner builds the selected commit, backs up and atomically replaces only `/var/www/cf-hub/display/rooms/index.html` with `dist/hub.html`, then verifies the page, read-only API, authentication and service health. The five-minute JSON reader runs independently on HK1; frontend polling stays15 seconds. The temporary hostname currently transits CA1 to reach HK1. Legacy CA1 routes are kept until a separate cutover; new UI publication targets HK1. Operational receipts record the source commit and artifact hash.
 
-The selected production layout is [09 换一个好问题](docs/question-card-design.md): a stable booking area above a pale yellow question card. Four bundled questions cycle by tapping the arrow, without network or AI calls. The full portrait canvas fits the available viewport without scrolling. State boundaries and data expiry are checked every second even if a fetch stalls; a ten-second request timeout and15-second polling allow later recovery.
+The selected production layout is [09 换一个好问题](docs/question-card-design.md): a stable booking area above a pale yellow question card. The entire upper booking area turns green, red, amber or slate with large white status text. 100 original bundled answer-book prompts draw randomly on load and every 30 seconds; tapping the arrow draws immediately and resets the reading time. No index or total is shown, and each cycle avoids repeats. No network or AI calls are involved. The full portrait canvas fits the available viewport without scrolling. State boundaries and data expiry are checked every second even if a fetch stalls; a ten-second request timeout and15-second polling allow later recovery.
 
 The CreativeFitting wordmark is company branding. Nunito and Quicksand retain their bundled SIL Open Font License texts in `assets/`. Public visibility allows viewing and proposing changes; no general open-source license is granted for the UI or brand artwork.
