@@ -143,3 +143,8 @@ new ResizeObserver(resizePad).observe($('preview-panel'));addEventListener('resi
   if(previewId){if(!/^[0-9a-f]{32}$/.test(previewId))throw new Error('预览链接不正确');await showSubmission(await api(base+'/api/submissions/'+previewId));}
  }catch(error){message(error.message,true);$('account').textContent='请重新登录';$('submissions-list').textContent='登录后可查看投稿。';}
 })();
+
+$('copy-email-subject').addEventListener('click',async()=>{
+  try {await navigator.clipboard.writeText($('email-subject').value);$('email-feedback').textContent='邮件主题已复制，请将占位文字换成作品名称和署名。';}
+  catch(_) {$('email-subject').select();$('email-feedback').textContent='请复制已选中的邮件主题。';}
+});

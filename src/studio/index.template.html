@@ -3,7 +3,15 @@
 <main class="studio"><section class="workspace"><div class="eyebrow">A LITTLE SPACE FOR BIG IDEAS</div><h1>把你的灵感，<br>放进会议屏。</h1><p class="intro">一个轻互动、一段小动画、一张作品。<br>为走廊里的几秒钟，做点有意思的内容。</p>
 <div class="spec-chips"><span>602 × 382 CSS px</span><span>轻触互动</span><span>HTML · 图片 · 视频</span></div>
 <div class="notice">当前开放投稿和预览。提交作品不会改变正在使用的会议屏。</div>
-<form id="submission-form" class="card"><div class="card-heading"><h2>提交一件作品</h2><a href="/rooms/studio/starter.html" download>下载 HTML 模板 ↓</a></div>
+<section class="email-submission card" aria-labelledby="email-heading">
+<div class="card-heading"><h2 id="email-heading">用邮件投稿</h2><span class="email-tag">另一种投稿方式</span></div>
+<p>作品作为附件发送至 <a href="{{EMAIL_MAILTO}}">{{EMAIL_ADDRESS}}</a></p>
+<label class="email-label" for="email-subject">统一邮件主题</label><input id="email-subject" class="email-subject" readonly value="{{EMAIL_SUBJECT}}" aria-label="统一邮件主题">
+<div class="email-actions"><a class="secondary" href="{{EMAIL_MAILTO}}">打开邮件草稿 ↗</a><button class="text-button" type="button" id="copy-email-subject">复制邮件主题</button></div>
+<p class="email-note">正文写明作品简介、署名与互动方式，每封邮件附一件作品。打开草稿后请自行添加附件。邮件由管理员收件后整理，预览链接后续提供；想立即预览，也可以在下方网页投稿。</p>
+<span id="email-feedback" role="status" aria-live="polite"></span>
+</section>
+<form id="submission-form" class="card"><div class="card-heading"><h2>网页投稿</h2><a href="/rooms/studio/starter.html" download>下载 HTML 模板 ↓</a></div>
 <label class="dropzone" for="file"><span class="upload-icon">＋</span><strong id="file-name">选择你的作品文件</strong><span>HTML ≤ 1MB · 图片 ≤ 10MB · 视频 ≤ 50MB</span><input id="file" name="file" type="file" accept=".html,.htm,.png,.jpg,.jpeg,.webp,.mp4,.webm"></label>
 <div class="field"><label for="title">作品名称</label><input id="title" name="title" maxlength="80" placeholder="给这个想法起个名字" required></div>
 <div class="form-row"><div class="field"><label for="author">作者署名 <span>可选</span></label><input id="author" name="author" maxlength="40" placeholder="你希望显示的名字"></div><div class="field"><label for="fit">图片／视频展示</label><select id="fit" name="fit"><option value="contain">完整显示（保留留白）</option><option value="cover">铺满区域（允许裁切）</option></select></div></div>
