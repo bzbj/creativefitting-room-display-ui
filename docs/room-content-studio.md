@@ -43,6 +43,12 @@
 
 联系邮箱和邮件格式统一维护在 `src/studio/email-submission.json`，构建时注入两个页面；修改地址或主题应同时更新本文档。
 
+## 交给 Agent 完成
+
+投稿页在邮件入口下方提供「让 Agent 帮你做」：一键复制后填入创意、作品名、署名及形式，让 Agent 交付可用文件、一句话介绍、触摸说明和邮件草稿。默认单文件 HTML，也覆盖图片和视频规格；包含暂定内容602×382／整屏602×962、文字及触摸尺寸、离线和动画要求、网页预览与邮件投稿步骤。完整提示词可展开阅读；复制不可用时会展开并选中文字，方便手动复制。
+
+提示词唯一源文件是 `src/studio/agent-prompt.txt`，构建时注入投稿页和指南；邮箱／主题从 `email-submission.json` 代入，保持一致。指南保留同一份完整提示词。不自动发送邮件或上屏。
+
 ## 前端开发
 
 源码在 `src/studio/`；执行 `python3 scripts/build.py` 产生 `dist/studio/{index,shell,guide,starter}.html`。启动 `python3 scripts/dev_server.py --port 8880`，访问 `http://127.0.0.1:8880/rooms/studio/`。本地只试播文件，保存投稿需要线上身份和私有服务。改动Studio时现有 `dist/hub.html` 应保持不变。

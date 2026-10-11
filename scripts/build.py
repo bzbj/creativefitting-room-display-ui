@@ -73,7 +73,10 @@ def build_studio() -> None:
     mailto = "mailto:" + email["recipient"] + "?" + urlencode({
         "subject": email["subject"], "body": "\r\n".join(email["body_lines"]),
     }, quote_via=quote)
+    prompt = (source / "agent-prompt.txt").read_text().strip()
+    prompt = prompt.replace("{{EMAIL_ADDRESS}}", email["recipient"]).replace("{{EMAIL_SUBJECT}}", email["subject"])
     replacements = {
+        "{{AGENT_PROMPT}}": html_module.escape(prompt),
         "{{EMAIL_ADDRESS}}": html_module.escape(email["recipient"], quote=True),
         "{{EMAIL_SUBJECT}}": html_module.escape(email["subject"], quote=True),
         "{{EMAIL_MAILTO}}": html_module.escape(mailto, quote=True),
