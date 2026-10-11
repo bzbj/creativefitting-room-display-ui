@@ -31,6 +31,19 @@ let snapshot = null;
 let fetchError = false;
 let fetchErrorReason = roomNumber ? '' : '请检查会议室链接';
 let lastLayoutSignature = '';
+const questions = [
+  '如果这次讨论\n只能做一个决定，\n会是什么？',
+  '如果只用一半时间，\n我们会先做哪件事？',
+  '什么证据，\n会让我们改变主意？',
+  '这个想法，\n最小可以小到什么程度？'
+];
+let questionIndex = 0;
+
+function nextQuestion() {
+  questionIndex = (questionIndex + 1) % questions.length;
+  $('question-text').textContent = questions[questionIndex];
+  $('question-index').textContent = `${String(questionIndex + 1).padStart(2, '0')} / ${String(questions.length).padStart(2, '0')}`;
+}
 
 function time(iso) { return clockFormat.format(new Date(iso)); }
 function dayLabel(iso, now) {
@@ -50,6 +63,7 @@ function updateClock() {
 function setAppHeight() {
   const visible = Math.min(window.innerHeight, window.visualViewport?.height || window.innerHeight);
   document.documentElement.style.setProperty('--app-height', Math.round(visible) + 'px');
+  document.documentElement.style.setProperty('--screen-scale', Math.min(window.innerWidth / 602, visible / 962));
 }
 function setState(kind, kicker, headline, support) {
   document.body.className = 'state-' + kind;
@@ -72,7 +86,7 @@ function addBooking(parent, event, index, now) {
   range.append(start, dash, end);
   const organizer = document.createElement('div');
   organizer.className = 'booking-organizer';
-  organizer.textContent = event.organizerName ? `组织者 ${event.organizerName}` : '已预约';
+  organizer.textContent = '已预约';
   card.append(label, range, organizer);
   parent.append(card);
 }
@@ -89,16 +103,17 @@ function showMessage(title, detail) {
 }
 function drawBookings(events, now, fresh) {
   if (!fresh) {
-    $('booking-horizon').textContent = '实时状态';
-    showMessage('预约暂不可用', '请查看飞书');
+    $('booking-horizon').textContent = '';
+    showMessage('请以飞书预约信息为准', '请查看飞书');
     return;
   }
-  $('booking-horizon').textContent = snapshot?.source === 'demo' ? '示例数据' : '未来两天';
-  const upcoming = events.filter(event => event.end > now.getTime()).slice(0, 3);
+  const upcoming = events.filter(event => event.start > now.getTime()).slice(0, 1);
   if (!upcoming.length) {
+    $('booking-horizon').textContent = '';
     showMessage('暂无预约', '未来两天');
     return;
   }
+  $('booking-horizon').textContent = `· ${dayLabel(upcoming[0].startIso, now)} · 已预约`;
   const fragment = document.createDocumentFragment();
   upcoming.forEach((event, index) => addBooking(fragment, event, index, now));
   $('booking-list').replaceChildren(fragment);
@@ -108,12 +123,16 @@ function render() {
   updateClock();
   const room = snapshot?.room;
   $('room-name').textContent = room?.name || '会议室';
+  const weight = [...$('room-name').textContent].reduce((sum, char) => sum + (/[^\x00-\x7F]/.test(char) ? 1 : .6), 0);
+  document.documentElement.style.setProperty('--room-size', Math.max(26, Math.min(66, 380 / weight)) + 'px');
+  $('room-number').textContent = roomNumber ? `ROOM ${roomNumber.padStart(2, '0')}` : 'ROOM —';
   $('capacity').textContent = room?.capacity ? `${room.capacity} 人` : '';
 
   const fetched = snapshot?.fetched_at ? Date.parse(snapshot.fetched_at) : 0;
-  const maxAgeMs = (snapshot?.max_age_seconds || 180) * 1000;
+  const configuredAge = Number(snapshot?.max_age_seconds);
+  const maxAgeMs = (Number.isFinite(configuredAge) && configuredAge > 0 ? configuredAge : 180) * 1000;
   const fresh = Boolean(snapshot?.fresh && !fetchError && fetched &&
-    now.getTime() - fetched < maxAgeMs && room?.enabled);
+    now.getTime() - fetched >= 0 && now.getTime() - fetched < maxAgeMs && room?.enabled);
   const events = (snapshot?.events || []).map(event => ({
     startIso:event.start, endIso:event.end,
     start:Date.parse(event.start), end:Date.parse(event.end),
@@ -126,11 +145,11 @@ function render() {
   if (!fresh) {
     setState('unknown', '预约状态', '状态未知', fetchErrorReason || (room?.enabled === false ? '暂停使用' : '请查看飞书'));
   } else if (current) {
-    setState('busy', '当前状态', '使用中', `至 ${time(current.endIso)}`);
+    setState('busy', '当前状态', '已预约', `本场预计至 ${time(current.endIso)}`);
   } else if (next && next.start - now.getTime() <= 10 * 60000) {
-    setState('soon', '当前状态', '即将开始', `${time(next.startIso)} 开始`);
+    setState('soon', '当前状态', '即将开始', `距下一场 ${Math.ceil((next.start - now.getTime()) / 60000)} 分钟`);
   } else {
-    setState('available', '当前状态', '空闲', '当前无预约');
+    setState('available', '当前状态', '空闲', next ? `可使用至 ${time(next.startIso)}` : '未来两天暂无预约');
   }
   drawBookings(events, now, fresh);
   $('sync-text').textContent = snapshot?.source === 'demo' ? '示例数据 · 请勿用于实际使用' :
@@ -140,23 +159,27 @@ function render() {
 async function refresh() {
   if (!roomNumber) { fetchError = true; render(); return; }
   fetchErrorReason = '';
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
   try {
-    const response = await fetch(`${apiBase}/room/${roomNumber}?v=${Date.now()}`, {cache:'no-store'});
+    const response = await fetch(`${apiBase}/room/${roomNumber}?v=${Date.now()}`, {cache:'no-store', signal:controller.signal});
     if (response.status === 404) {
       snapshot = null;
       fetchErrorReason = '请检查会议室链接';
     }
+    if (response.status === 401 || response.status === 403) fetchErrorReason = '请重新登录飞书';
     if (!response.ok) throw new Error('HTTP ' + response.status);
     snapshot = await response.json();
     fetchError = false;
   } catch (_) { fetchError = true; }
+  finally { clearTimeout(timeout); }
   render();
 }
 function reportLayout() {
   if (document.body.dataset.layoutReport === 'off') return;
   const elements = {};
   const selectors = {
-    header:'.topbar', brand:'.brand-wordmark', main:'.content', room:'.room-side',
+    header:'.topbar', brand:'.brand-wordmark', main:'.signage', room:'.booking-core',
     roomMeta:'.room-meta', roomName:'#room-name', status:'.status-block',
     statusMain:'.status-main', statusSupport:'.status-support',
     schedule:'.booking-side', bookingHead:'.booking-head',
@@ -166,7 +189,7 @@ function reportLayout() {
     lastItem:'.booking-list > :last-child',
     lastEnd:'.booking-card.secondary:last-child .booking-time span:last-child',
     lastOrganizer:'.booking-card.secondary:last-child .booking-organizer',
-    footer:'footer'
+    footer:'footer', question:'.question-card', questionText:'#question-text', questionButton:'#question-next'
   };
   for (const [name, selector] of Object.entries(selectors)) {
     const node = document.querySelector(selector);
@@ -179,7 +202,7 @@ function reportLayout() {
     };
   }
   const report = {
-    layoutVersion:4,
+    layoutVersion:5,
     viewport:{width:window.innerWidth, height:window.innerHeight,
       visualHeight:Math.round(window.visualViewport?.height || window.innerHeight),
       devicePixelRatio:window.devicePixelRatio},
@@ -202,10 +225,11 @@ function reportLayout() {
 }
 
 setAppHeight();
+$('question-next').addEventListener('click', nextQuestion);
 updateClock();
 render();
 refresh();
 window.addEventListener('resize', () => { setAppHeight(); setTimeout(reportLayout, 150); });
 window.visualViewport?.addEventListener('resize', () => { setAppHeight(); setTimeout(reportLayout, 150); });
-setInterval(updateClock, 1000);
+setInterval(render, 1000);
 setInterval(refresh, 15000);
