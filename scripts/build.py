@@ -60,13 +60,23 @@ def configure(html: str, api_base: str) -> str:
 
 
 def build_studio() -> None:
+    import html as html_module
+    import json
     import re
     import shutil
+    from urllib.parse import quote, urlencode
 
     source = SRC / "studio"
     output = DIST / "studio"
     output.mkdir(parents=True, exist_ok=True)
+    email = json.loads((source / "email-submission.json").read_text())
+    mailto = "mailto:" + email["recipient"] + "?" + urlencode({
+        "subject": email["subject"], "body": "\r\n".join(email["body_lines"]),
+    }, quote_via=quote)
     replacements = {
+        "{{EMAIL_ADDRESS}}": html_module.escape(email["recipient"], quote=True),
+        "{{EMAIL_SUBJECT}}": html_module.escape(email["subject"], quote=True),
+        "{{EMAIL_MAILTO}}": html_module.escape(mailto, quote=True),
         "{{STUDIO_CSS}}": (source / "styles.css").read_text(),
         "{{STUDIO_SCRIPT}}": (source / "app.js").read_text(),
         "{{WORDMARK_DATA}}": data_uri(ASSETS / "wordmark-dotted-i-solid-blue.svg", "image/svg+xml"),

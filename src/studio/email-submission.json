@@ -1,0 +1,15 @@
+{
+  "recipient": "jacky.lin@opengrove.io",
+  "subject": "[会议屏投稿] 作品名称 - 作者署名",
+  "body_lines": [
+    "作品名称：",
+    "作者署名：",
+    "作品简介：",
+    "触摸互动说明：",
+    "展示方式：完整显示（留白） / 铺满（裁切）",
+    "",
+    "请自行添加一个作品文件作为附件：HTML、图片或视频。每封邮件提交一件作品。",
+    "尺寸及文件规格请参考：https://hub-test.linjunkai.com/rooms/studio/guide/",
+    "本阶段仅投稿与预览，不上屏。"
+  ]
+}
