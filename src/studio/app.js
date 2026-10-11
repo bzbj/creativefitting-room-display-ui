@@ -148,3 +148,7 @@ $('copy-email-subject').addEventListener('click',async()=>{
   try {await navigator.clipboard.writeText($('email-subject').value);$('email-feedback').textContent='邮件主题已复制，请将占位文字换成作品名称和署名。';}
   catch(_) {$('email-subject').select();$('email-feedback').textContent='请复制已选中的邮件主题。';}
 });
+$('copy-agent-prompt').addEventListener('click',async()=>{
+  try {await navigator.clipboard.writeText($('agent-prompt').textContent);$('agent-feedback').textContent='已复制，粘贴给 Agent 后填入你的创意和署名。';}
+  catch(_) {$('agent-prompt').closest('details').open=true;const range=document.createRange();range.selectNodeContents($('agent-prompt'));const selection=getSelection();selection.removeAllRanges();selection.addRange(range);$('agent-feedback').textContent='请复制已选中的提示词，交给 Agent。';}
+});

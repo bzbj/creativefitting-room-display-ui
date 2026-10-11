@@ -11,6 +11,13 @@
 <p class="email-note">正文写明作品简介、署名与互动方式，每封邮件附一件作品。打开草稿后请自行添加附件。邮件由管理员收件后整理，预览链接后续提供；想立即预览，也可以在下方网页投稿。</p>
 <span id="email-feedback" role="status" aria-live="polite"></span>
 </section>
+<section class="agent-creation card" aria-labelledby="agent-heading">
+<div class="card-heading"><h2 id="agent-heading">让 Agent 帮你做</h2><span class="email-tag">从一句创意开始</span></div>
+<p>复制提示词交给你常用的 Agent，填入创意和署名。尺寸、轻触交互、文件规格和投稿方式都已写好。</p>
+<div class="agent-actions"><button class="secondary" type="button" id="copy-agent-prompt">复制 Agent 提示词</button><a href="/rooms/studio/guide/" target="_blank" rel="noopener">查看创作指南 ↗</a></div>
+<details class="agent-prompt-details"><summary>查看完整提示词</summary><pre id="agent-prompt" tabindex="0">{{AGENT_PROMPT}}</pre></details>
+<span id="agent-feedback" role="status" aria-live="polite"></span>
+</section>
 <form id="submission-form" class="card"><div class="card-heading"><h2>网页投稿</h2><a href="/rooms/studio/starter.html" download>下载 HTML 模板 ↓</a></div>
 <label class="dropzone" for="file"><span class="upload-icon">＋</span><strong id="file-name">选择你的作品文件</strong><span>HTML ≤ 1MB · 图片 ≤ 10MB · 视频 ≤ 50MB</span><input id="file" name="file" type="file" accept=".html,.htm,.png,.jpg,.jpeg,.webp,.mp4,.webm"></label>
 <div class="field"><label for="title">作品名称</label><input id="title" name="title" maxlength="80" placeholder="给这个想法起个名字" required></div>
