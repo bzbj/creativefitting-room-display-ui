@@ -13,8 +13,8 @@
 - 动效轻缓，兼容 Android 浏览器；不做复杂3D、密集粒子或快速闪烁。内容不依赖声音，并尊重 prefers-reduced-motion。
 
 交付规格
-- HTML：单个 UTF-8 .html 文件，≤1MB，CSS、JS、字体和素材全部内联，可用内联 SVG 或 data URL。不依赖网络、CDN或额外文件，不用ZIP。让 html、body 占满内容视口、无页面滚动。在 scripts-enabled、无同源权限的 sandbox iframe 中可用；不能访问父页面、Cookie、localStorage、接口、弹窗或外链。
-- 图片：PNG / JPG / WebP，≤10MB，建议1204 × 764px；最长边≤4096px，总像素≤1000万。
+- HTML：单个 UTF-8 .html 文件，≤20MB，CSS、JS、字体和素材全部内联，可用内联 SVG 或 data URL。不依赖网络、CDN或额外文件，不用ZIP。让 html、body 占满内容视口、无页面滚动。在 scripts-enabled、无同源权限的 sandbox iframe 中可用；不能访问父页面、Cookie、localStorage、接口、弹窗或外链。
+- 图片：PNG / JPG / WebP，≤20MB，建议1204 × 764px；最长边≤4096px，总像素≤1000万。
 - 视频：MP4/H.264 或 WebM/VP8/VP9，≤50MB，建议1204 × 764px、24–30fps、10–30秒；最长60秒、最大1920 × 1080、30fps。预览会静音循环，轻触暂停／继续；无需把播放器放进视频里。
 
 完成与投稿

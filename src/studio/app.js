@@ -6,7 +6,8 @@ let me = null, selectedFile = null, content = null, blobUrl = null, version = 0,
 const previewId = new URL(location.href).searchParams.get('preview');
 if (new URL(location.href).searchParams.get('standalone') === '1') document.body.classList.add('standalone');
 const kinds = {html:'html',htm:'html',png:'image',jpg:'image',jpeg:'image',webp:'image',mp4:'video',webm:'video'};
-const limits = {html:1048576,image:10485760,video:52428800};
+const limits = {html:20971520,image:20971520,video:52428800};
+const labels = {html:'HTML',image:'图片',video:'视频'};
 function send(reset = false) {
   frame.contentWindow?.postMessage({type:'room-studio-preview',state:$('state').value,content,reset},location.origin);
 }
@@ -52,7 +53,8 @@ async function chooseFile() {
   $('file-check').className = 'file-check'; $('file-check').textContent = '正在读取文件…';
   try {
     if (!kind) throw new Error('请选择 HTML、PNG / JPG / WebP 或 MP4 / WebM');
-    if (!file.size || file.size > limits[kind]) throw new Error('文件为空或超过大小限制');
+    if (!file.size) throw new Error('文件为空，请选择一个作品文件');
+    if (file.size > limits[kind]) throw new Error(`${labels[kind]}文件最大 ${limits[kind] / 1048576}MB，请缩小后再提交`);
     const next = {kind,fit:$('fit').value,key:'local-'+selection};
     let info = {width:602,height:382};
     if (kind === 'html') next.html = new TextDecoder('utf-8',{fatal:true}).decode(await file.arrayBuffer());
