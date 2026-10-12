@@ -81,6 +81,7 @@ def build_studio() -> None:
         "{{EMAIL_SUBJECT}}": html_module.escape(email["subject"], quote=True),
         "{{EMAIL_MAILTO}}": html_module.escape(mailto, quote=True),
         "{{STUDIO_CSS}}": (source / "styles.css").read_text(),
+        "{{GUIDE_DEVICE_CSS}}": (source / "guide-device.css").read_text(),
         "{{STUDIO_SCRIPT}}": (source / "app.js").read_text(),
         "{{WORDMARK_DATA}}": data_uri(ASSETS / "wordmark-dotted-i-solid-blue.svg", "image/svg+xml"),
     }

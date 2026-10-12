@@ -1,0 +1,7 @@
+.guide .guide-canvas{align-items:center;gap:28px}
+.guide-device{margin:0 auto;width:100%;max-width:340px}
+.guide-tablet{position:relative;padding:12px 20px;border:1px solid #42494e;border-radius:18px;background:linear-gradient(135deg,#2b3034,#11171c);box-shadow:0 16px 28px #1f344027,0 2px 4px #0003}
+.guide-tablet-camera{position:absolute;left:8px;top:50%;width:5px;height:5px;border-radius:50%;background:#071017;box-shadow:0 0 0 1px #3b454c;transform:translateY(-50%)}
+.guide-tablet-screen{display:block;width:100%;height:auto;border-radius:3px;background:#fff}
+.guide-device figcaption{text-align:center;font-size:12px;color:#71818c;margin-top:15px;line-height:1.7}
+@media(max-width:760px){.guide .guide-canvas{gap:20px}.guide-device{max-width:320px}}
