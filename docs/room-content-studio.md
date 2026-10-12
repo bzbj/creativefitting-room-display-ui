@@ -51,6 +51,8 @@
 
 ## 前端开发
 
+指南的尺寸示意使用黑色平板外框和内联SVG：屏幕`viewBox="0 0 602 962"`，预约区高580、创作区从y580开始高382，保持与会议牌相同的设计坐标和比例。外框在画布外；页面等比缩放显示。`src/studio/guide-device.css`仅注入指南，修改此图不改变Studio或原会议牌构建。602×962仍为暂定竖屏尺寸。
+
 源码在 `src/studio/`；执行 `python3 scripts/build.py` 产生 `dist/studio/{index,shell,guide,starter}.html`。启动 `python3 scripts/dev_server.py --port 8880`，访问 `http://127.0.0.1:8880/rooms/studio/`。本地只试播文件，保存投稿需要线上身份和私有服务。改动Studio时现有 `dist/hub.html` 应保持不变。
 
 `shell.html`从现有会议牌的模板和样式生成，只使用模拟状态。用户HTML放入 `sandbox="allow-scripts"` 的隔离iframe，**不能加入allow-same-origin**；CSP禁止网络、内嵌外部页面和表单提交。用户HTML下载接口返回text/plain而非同源可执行页面。参见 [MDN iframe 文档](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe)。
